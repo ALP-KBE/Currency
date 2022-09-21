@@ -12,7 +12,7 @@ import ALP.RabbitMessage;
 import ALP.KBECurrency.Converter;
 
 @Component
-@RabbitListener(queues = "main-queue", id = "listener")
+@RabbitListener(queues = "currency-queue", id = "listener")
 public class RabbitMQReceiver {
 
     @Autowired

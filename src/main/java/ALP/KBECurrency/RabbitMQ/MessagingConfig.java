@@ -11,12 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MessagingConfig {
 
-    static final String TOPIC_EXCHANGE_NAME = "product-exchange";
-
-    @Bean
-    public Queue productQueue() {
-        return new Queue("product-queue");
-    }
+    static final String TOPIC_EXCHANGE_NAME = "currency-exchange";
 
     @Bean
     public Queue mainQueue() {
@@ -26,11 +21,6 @@ public class MessagingConfig {
     @Bean
     public TopicExchange exchange() {
         return new TopicExchange(TOPIC_EXCHANGE_NAME);
-    }
-
-    @Bean
-    public Binding productBinding(Queue productQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(productQueue).to(exchange).with("product-key");
     }
 
     @Bean
