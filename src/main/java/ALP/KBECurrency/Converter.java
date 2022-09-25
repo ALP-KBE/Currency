@@ -8,23 +8,23 @@ public class Converter{
     private static final float DOLLAR_YEN = 127.5145f;
     private static final float DOLLAR_RIEL = 4061.3000f;
 
-    public static String dollarToEuro(float value) {
-        return String.valueOf(value * DOLLAR_EURO);
+    public static String dollarToEuro(String value) {
+        return String.valueOf(Float.valueOf(value) * DOLLAR_EURO);
     }
 
-    public static String dollarToKyat(float value) {
-        return String.valueOf(value * DOLLAR_KYAT);
+    public static String dollarToKyat(String value) {
+        return String.valueOf(Float.valueOf(value) * DOLLAR_KYAT);
     }
 
-    public static String dollarToYen(float value) {
-        return String.valueOf(value * DOLLAR_YEN);
+    public static String dollarToYen(String value) {
+        return String.valueOf(Float.valueOf(value) * DOLLAR_YEN);
     }
 
-    public static String dollarToRiel(float value) {
-        return String.valueOf(value * DOLLAR_RIEL);
+    public static String dollarToRiel(String value) {
+        return String.valueOf(Float.valueOf(value) * DOLLAR_RIEL);
     }
 
-    public static String dollarToDollar(float value) {
-        return String.valueOf(value * DOLLAR_DOLLAR);
+    public static String dollarToDollar(String value) {
+        return String.valueOf(Float.valueOf(value) * DOLLAR_DOLLAR);
     }
 }

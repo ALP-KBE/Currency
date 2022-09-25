@@ -25,8 +25,8 @@ public class RabbitMessage implements Serializable {
         return value;
     }
 
-    public void setAdditionalField(Serializable additionalField) {
-        this.additionalField = additionalField;
+    public void setValue(Serializable value) {
+        this.value = value;
     }
 
     public Serializable getAdditionalField() {
