@@ -1,98 +1,70 @@
 package ALP.KBECurrency.RabbitMQ;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ALP.RabbitMessage;
 import ALP.KBECurrency.Converter;
+import ALP.KBECurrency.Model.Component;
 
-@Component
+@org.springframework.stereotype.Component
 @RabbitListener(queues = "currency-queue", id = "listener")
 public class RabbitMQReceiver {
 
     @Autowired
     RabbitMQSender sender;
+    final ObjectMapper objectMapper = new ObjectMapper();
 
     @RabbitHandler
-    public void receiver(RabbitMessage message) {
-        System.out.println("message angekommen " + message.getValue());
-        switch (message.getType()) {
-            case "getEuro":
-                if (message.getValue() instanceof ArrayList) {
-                    ArrayList<ALP.KBECurrency.Model.Component> newArrayList = new ArrayList<>();
-                    ArrayList<LinkedHashMap<String, String>> arrayList = (ArrayList<LinkedHashMap<String, String>>) message
-                            .getValue();
-                    for (LinkedHashMap<String, String> linkedHashMap : arrayList) {
-                        ALP.KBECurrency.Model.Component component = processLinkedHashMap(linkedHashMap);
-                        component.setPreis(Converter.dollarToEuro(Float.valueOf(component.getPreis())));
-                        newArrayList.add(component);
+    public void receiver(RabbitMessage message) throws JsonMappingException, JsonProcessingException {
+        RabbitMessage rabbitMessage = new RabbitMessage("component", "");
+        ArrayList<Component> components = objectMapper.readValue((String) message.getValue(),
+                new TypeReference<ArrayList<Component>>() {
+                });
+        switch (((String) message.getAdditionalField())) {
+            case "euro":
+                for (Component component : components) {
+                    component.setPreis(Converter.dollarToEuro(component.getPreis()));
                     }
-                    sender.send(newArrayList);
-                }
+                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
+                sender.send(rabbitMessage);
                 break;
-            case "getDollar":
-                if (message.getValue() instanceof ArrayList) {
-                    ArrayList<ALP.KBECurrency.Model.Component> newArrayList = new ArrayList<>();
-                    ArrayList<LinkedHashMap<String, String>> arrayList = (ArrayList<LinkedHashMap<String, String>>) message
-                            .getValue();
-                    for (LinkedHashMap<String, String> linkedHashMap : arrayList) {
-                        ALP.KBECurrency.Model.Component component = processLinkedHashMap(linkedHashMap);
-                        component.setPreis(Converter.dollarToDollar(Float.valueOf(component.getPreis())));
-                        newArrayList.add(component);
+            case "dollar":
+                for (Component component : components) {
+                    component.setPreis(Converter.dollarToDollar(component.getPreis()));
                     }
-                    sender.send(newArrayList);
-                }
+                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
+                sender.send(rabbitMessage);
                 break;
-            case "getKyat":
-                if (message.getValue() instanceof ArrayList) {
-                    ArrayList<ALP.KBECurrency.Model.Component> newArrayList = new ArrayList<>();
-                    ArrayList<LinkedHashMap<String, String>> arrayList = (ArrayList<LinkedHashMap<String, String>>) message
-                            .getValue();
-                    for (LinkedHashMap<String, String> linkedHashMap : arrayList) {
-                        ALP.KBECurrency.Model.Component component = processLinkedHashMap(linkedHashMap);
-                        component.setPreis(Converter.dollarToKyat(Float.valueOf(component.getPreis())));
-                        newArrayList.add(component);
+            case "kyat":
+                for (Component component : components) {
+                    component.setPreis(Converter.dollarToKyat(component.getPreis()));
                     }
-                    sender.send(newArrayList);
-                }
+                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
+                sender.send(rabbitMessage);
                 break;
-            case "getYen":
-                if (message.getValue() instanceof ArrayList) {
-                    ArrayList<ALP.KBECurrency.Model.Component> newArrayList = new ArrayList<>();
-                    ArrayList<LinkedHashMap<String, String>> arrayList = (ArrayList<LinkedHashMap<String, String>>) message
-                            .getValue();
-                    for (LinkedHashMap<String, String> linkedHashMap : arrayList) {
-                        ALP.KBECurrency.Model.Component component = processLinkedHashMap(linkedHashMap);
-                        component.setPreis(Converter.dollarToYen(Float.valueOf(component.getPreis())));
-                        newArrayList.add(component);
+            case "yen":
+                for (Component component : components) {
+                    component.setPreis(Converter.dollarToYen(component.getPreis()));
                     }
-                    sender.send(newArrayList);
-                }
+                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
+                sender.send(rabbitMessage);
                 break;
-            case "getRiel":
-                if (message.getValue() instanceof ArrayList) {
-                    ArrayList<ALP.KBECurrency.Model.Component> newArrayList = new ArrayList<>();
-                    ArrayList<LinkedHashMap<String, String>> arrayList = (ArrayList<LinkedHashMap<String, String>>) message
-                            .getValue();
-                    for (LinkedHashMap<String, String> linkedHashMap : arrayList) {
-                        ALP.KBECurrency.Model.Component component = processLinkedHashMap(linkedHashMap);
-                        component.setPreis(Converter.dollarToRiel(Float.valueOf(component.getPreis())));
-                        newArrayList.add(component);
+            case "riel":
+                for (Component component : components) {
+                    component.setPreis(Converter.dollarToRiel(component.getPreis()));
                     }
-                    sender.send(newArrayList);
-                }
+                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
+                sender.send(rabbitMessage);
                 break;
         }
-    }
-
-    private ALP.KBECurrency.Model.Component processLinkedHashMap(LinkedHashMap<String, String> linkedHashMap) {
-        ALP.KBECurrency.Model.Component component = new ALP.KBECurrency.Model.Component();
-        linkedHashMap.forEach((key, val) -> component.set(key, val));
-        return component;
     }
 }
