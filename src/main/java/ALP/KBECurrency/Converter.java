@@ -1,6 +1,14 @@
 package ALP.KBECurrency;
 
+import ALP.KBECurrency.RabbitMQ.RabbitMQSender;
+import ALP.RabbitMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
 public class Converter{
+    @Autowired
+    RabbitMQSender currencySender;
 
     private static final float DOLLAR_EURO = 0.9467f;
     private static final float DOLLAR_DOLLAR = 1f;
@@ -26,5 +34,25 @@ public class Converter{
 
     public static float dollarToDollar(float value) {
         return value * DOLLAR_DOLLAR;
+    }
+
+    public void handle(RabbitMessage message)    {
+        Double basePrice=(Double) message.getValue();
+        float basePriceFloat= basePrice.floatValue();
+        float adjustedPrice;
+
+        switch ((String) message.getAdditionalField()) {
+            case "KYAT" -> adjustedPrice = dollarToKyat(basePriceFloat);
+            case "EURO" -> adjustedPrice = dollarToEuro(basePriceFloat);
+            case "YEN" -> adjustedPrice = dollarToYen(basePriceFloat);
+            case "RIEL" -> adjustedPrice = dollarToRiel(basePriceFloat);
+            case "DOLLAR" -> adjustedPrice = dollarToDollar(basePriceFloat);
+            default -> {
+                System.out.println("keine Enum mitgeliefert :/");
+                adjustedPrice = dollarToDollar(basePriceFloat);
+            }
+        }
+        RabbitMessage rabbitMessage=new RabbitMessage("currency", adjustedPrice);
+        currencySender.send(rabbitMessage);
     }
 }
