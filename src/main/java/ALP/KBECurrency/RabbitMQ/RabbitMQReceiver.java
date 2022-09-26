@@ -70,19 +70,19 @@ public class RabbitMQReceiver {
             });
             switch (((String) message.getAdditionalField())) {
                 case "euro":
-                    product.setPreis(Converter.dollarToEuro(product.getPreis()));
+                    product.setPrice(Converter.dollarToEuro(product.getPrice()));
                     break;
                 case "dollar":
-                    product.setPreis(Converter.dollarToDollar(product.getPreis()));
+                    product.setPrice(Converter.dollarToDollar(product.getPrice()));
                     break;
                 case "kyat":
-                    product.setPreis(Converter.dollarToKyat(product.getPreis()));
+                    product.setPrice(Converter.dollarToKyat(product.getPrice()));
                     break;
                 case "yen":
-                    product.setPreis(Converter.dollarToYen(product.getPreis()));
+                    product.setPrice(Converter.dollarToYen(product.getPrice()));
                     break;
                 case "riel":
-                    product.setPreis(Converter.dollarToRiel(product.getPreis()));
+                    product.setPrice(Converter.dollarToRiel(product.getPrice()));
                     break;
             }
             RabbitMessage rabbitMessage = new RabbitMessage("product", objectMapper.writeValueAsString(product));
@@ -99,27 +99,27 @@ public class RabbitMQReceiver {
             switch (((String) message.getAdditionalField())) {
                 case "euro":
                     for (Product product : products) {
-                        product.setPreis(Converter.dollarToEuro(product.getPreis()));
+                        product.setPrice(Converter.dollarToEuro(product.getPrice()));
                     }
                     break;
                 case "dollar":
                     for (Product product : products) {
-                        product.setPreis(Converter.dollarToDollar(product.getPreis()));
+                        product.setPrice(Converter.dollarToDollar(product.getPrice()));
                     }
                     break;
                 case "kyat":
                     for (Product product : products) {
-                        product.setPreis(Converter.dollarToKyat(product.getPreis()));
+                        product.setPrice(Converter.dollarToKyat(product.getPrice()));
                     }
                     break;
                 case "yen":
                     for (Product product : products) {
-                        product.setPreis(Converter.dollarToYen(product.getPreis()));
+                        product.setPrice(Converter.dollarToYen(product.getPrice()));
                     }
                     break;
                 case "riel":
                     for (Product product : products) {
-                        product.setPreis(Converter.dollarToRiel(product.getPreis()));
+                        product.setPrice(Converter.dollarToRiel(product.getPrice()));
                     }
                     break;
             }

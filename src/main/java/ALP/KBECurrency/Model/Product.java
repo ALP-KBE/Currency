@@ -11,7 +11,7 @@ public class Product implements Serializable {
 
     private String name;
     private String additionalInfo;
-    private String preis;
+    private String price;
     private List<Component> components = new LinkedList<>();
 
     public Product(String name,
@@ -26,13 +26,13 @@ public class Product implements Serializable {
 
     public Product(String name,
             String additionalInfo,
-            String preis,
+            String price,
             Component... components) {
         for (Component comp : components) {
             this.components.add(comp);
         }
         this.name = name;
-        this.preis = preis;
+        this.price = price;
         this.additionalInfo = additionalInfo;
     }
 
@@ -56,12 +56,12 @@ public class Product implements Serializable {
         return this.additionalInfo;
     }
 
-    public String getPreis() {
-        return this.preis;
+    public String getPrice() {
+        return this.price;
     }
 
-    public void setPreis(String preis) {
-        this.preis = preis;
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     @Override
