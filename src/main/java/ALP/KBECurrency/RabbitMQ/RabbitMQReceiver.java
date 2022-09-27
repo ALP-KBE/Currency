@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ALP.RabbitMessage;
 import ALP.KBECurrency.Converter;
 import ALP.KBECurrency.Model.Component;
+import ALP.KBECurrency.Model.Product;
 
 @org.springframework.stereotype.Component
 @RabbitListener(queues = "currency-queue", id = "listener")
@@ -25,46 +26,105 @@ public class RabbitMQReceiver {
 
     @RabbitHandler
     public void receiver(RabbitMessage message) throws JsonMappingException, JsonProcessingException {
-        RabbitMessage rabbitMessage = new RabbitMessage("component", "");
-        ArrayList<Component> components = objectMapper.readValue((String) message.getValue(),
-                new TypeReference<ArrayList<Component>>() {
-                });
-        switch (((String) message.getAdditionalField())) {
-            case "euro":
-                for (Component component : components) {
-                    component.setPreis(Converter.dollarToEuro(component.getPreis()));
+        if (message.getAdditionalField() == null) {
+            message.setType("product");
+            sender.send(message);
+            return;
+        }
+        if (message.getType().equals("components")) {
+            RabbitMessage rabbitMessage = new RabbitMessage("component", "");
+            ArrayList<Component> components = objectMapper.readValue((String) message.getValue(),
+                    new TypeReference<ArrayList<Component>>() {
+                    });
+            switch (((String) message.getAdditionalField())) {
+                case "euro":
+                    for (Component component : components) {
+                        component.setPreis(Converter.dollarToEuro(component.getPreis()));
                     }
-                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
-                sender.send(rabbitMessage);
-                break;
-            case "dollar":
-                for (Component component : components) {
-                    component.setPreis(Converter.dollarToDollar(component.getPreis()));
+                    break;
+                case "dollar":
+                    for (Component component : components) {
+                        component.setPreis(Converter.dollarToDollar(component.getPreis()));
                     }
-                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
-                sender.send(rabbitMessage);
-                break;
-            case "kyat":
-                for (Component component : components) {
-                    component.setPreis(Converter.dollarToKyat(component.getPreis()));
+                    break;
+                case "kyat":
+                    for (Component component : components) {
+                        component.setPreis(Converter.dollarToKyat(component.getPreis()));
                     }
-                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
-                sender.send(rabbitMessage);
-                break;
-            case "yen":
-                for (Component component : components) {
-                    component.setPreis(Converter.dollarToYen(component.getPreis()));
+                    break;
+                case "yen":
+                    for (Component component : components) {
+                        component.setPreis(Converter.dollarToYen(component.getPreis()));
                     }
-                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
-                sender.send(rabbitMessage);
-                break;
-            case "riel":
-                for (Component component : components) {
-                    component.setPreis(Converter.dollarToRiel(component.getPreis()));
+                    break;
+                case "riel":
+                    for (Component component : components) {
+                        component.setPreis(Converter.dollarToRiel(component.getPreis()));
                     }
-                rabbitMessage.setValue(objectMapper.writeValueAsString(components));
-                sender.send(rabbitMessage);
-                break;
+                    break;
+            }
+            rabbitMessage.setValue(objectMapper.writeValueAsString(components));
+            sender.send(rabbitMessage);
+        } else if (message.getType().equals("product")) {
+            Product product = objectMapper.readValue((String) message.getValue(), new TypeReference<Product>() {
+            });
+            switch (((String) message.getAdditionalField())) {
+                case "euro":
+                    product.setPrice(Converter.dollarToEuro(product.getPrice()));
+                    break;
+                case "dollar":
+                    product.setPrice(Converter.dollarToDollar(product.getPrice()));
+                    break;
+                case "kyat":
+                    product.setPrice(Converter.dollarToKyat(product.getPrice()));
+                    break;
+                case "yen":
+                    product.setPrice(Converter.dollarToYen(product.getPrice()));
+                    break;
+                case "riel":
+                    product.setPrice(Converter.dollarToRiel(product.getPrice()));
+                    break;
+            }
+            RabbitMessage rabbitMessage = new RabbitMessage("product", objectMapper.writeValueAsString(product));
+            sender.send(rabbitMessage);
+        } else if (message.getType().equals("products")) {
+            ArrayList<Product> products = objectMapper.readValue((String) message.getValue(),
+                    new TypeReference<ArrayList<Product>>() {
+                    });
+            if (products.stream().anyMatch(product -> product == null)) {
+                message.setType("product");
+                sender.send(message);
+                return;
+            }
+            switch (((String) message.getAdditionalField())) {
+                case "euro":
+                    for (Product product : products) {
+                        product.setPrice(Converter.dollarToEuro(product.getPrice()));
+                    }
+                    break;
+                case "dollar":
+                    for (Product product : products) {
+                        product.setPrice(Converter.dollarToDollar(product.getPrice()));
+                    }
+                    break;
+                case "kyat":
+                    for (Product product : products) {
+                        product.setPrice(Converter.dollarToKyat(product.getPrice()));
+                    }
+                    break;
+                case "yen":
+                    for (Product product : products) {
+                        product.setPrice(Converter.dollarToYen(product.getPrice()));
+                    }
+                    break;
+                case "riel":
+                    for (Product product : products) {
+                        product.setPrice(Converter.dollarToRiel(product.getPrice()));
+                    }
+                    break;
+            }
+            RabbitMessage rabbitMessage = new RabbitMessage("product", objectMapper.writeValueAsString(products));
+            sender.send(rabbitMessage);
         }
     }
 }
