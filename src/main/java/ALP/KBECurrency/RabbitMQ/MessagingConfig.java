@@ -10,24 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MessagingConfig {
-
-    static final String TOPIC_EXCHANGE_NAME = "currency-exchange";
-
-    @Bean
-    public Queue mainQueue() {
-        return new Queue("main-queue");
-    }
-
-    @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(TOPIC_EXCHANGE_NAME);
-    }
-
-    @Bean
-    public Binding mainBinding(Queue mainQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(mainQueue).to(exchange).with("main-key");
-    }
-
+    
     @Bean
     public MessageConverter converter() {
         return new Jackson2JsonMessageConverter();
